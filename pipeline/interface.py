@@ -36,7 +36,7 @@ def load_model(pretrained_ckpt, use_bf16=True, load_in_8bit=False):
         base_model = HoneybeeForConditionalGeneration.from_pretrained(
             config.base_model_name_or_path,
             load_in_8bit=load_in_8bit,
-            torch_dtype=torch.bfloat16 if use_bf16 else torch.half,
+            dtype=torch.bfloat16 if use_bf16 else torch.half,
             # avoiding RuntimeError: Expected all tensors to be on the same device
             device_map={"": int(os.environ.get("LOCAL_RANK", 0))},
         )
@@ -44,13 +44,13 @@ def load_model(pretrained_ckpt, use_bf16=True, load_in_8bit=False):
             base_model,
             pretrained_ckpt,
             is_trainable=True,
-            torch_dtype=torch.bfloat16 if use_bf16 else torch.half,
+            dtype=torch.bfloat16 if use_bf16 else torch.half,
         )
     else:
         model = HoneybeeForConditionalGeneration.from_pretrained(
             pretrained_ckpt,
             load_in_8bit=load_in_8bit,
-            torch_dtype=torch.bfloat16 if use_bf16 else torch.half,
+            dtype=torch.bfloat16 if use_bf16 else torch.half,
         )
 
     return model

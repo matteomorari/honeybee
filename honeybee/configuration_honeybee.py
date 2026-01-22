@@ -110,23 +110,21 @@ class HoneybeeLanguageConfig(PretrainedConfig):
 
 class HoneybeeConfig(PretrainedConfig):
     is_composition = True
+    model_type = "mllm"
 
     def __init__(
         self,
-        vision_config: dict,
-        projector_config: dict,
-        lm_config: dict,
+        vision_config: dict = None,
+        projector_config: dict = None,
+        lm_config: dict = None,
         **kwargs,
     ):
-        """Honeybee model config.
-
-        This init function is called with two different scenario:
-        - in PT, explicitly called in train.py, with **hydra exp config**.
-        - in FT, implicitly called in from_pretrained, with **hf model config**.
-
-        Thus, we need to address both cases.
-        """
+        """Honeybee model config."""
         super().__init__(**kwargs)
+
+        # Handle the "blank init" case used by Transformers for serialization checks
+        if vision_config is None or projector_config is None or lm_config is None:
+            return
 
         # Note) three inter-module configs (vision -> projector or lm -> projector):
         # 1) vision_config.hidden_size -> projector_config.encoder_hidden_size

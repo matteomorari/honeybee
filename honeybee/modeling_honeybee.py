@@ -6,6 +6,7 @@ import torch
 import torch.utils.checkpoint
 from tqdm import tqdm
 from transformers.models.auto import AutoModelForCausalLM
+from transformers import GenerationMixin
 
 from honeybee.configuration_honeybee import HoneybeeConfig
 from honeybee.visual_encoders import build_encoder
@@ -57,7 +58,7 @@ def get_media_indices(my_list):
     return result
 
 
-class HoneybeeForConditionalGeneration(HoneybeePreTrainedModel):
+class HoneybeeForConditionalGeneration(HoneybeePreTrainedModel, GenerationMixin):
     config_class = HoneybeeConfig
     main_input_name = "pixel_values"
 
