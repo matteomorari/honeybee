@@ -104,10 +104,10 @@ class Projector(nn.Module):
     
     def _load_from_state_dict(self, state_dict, *args, **kwargs):
         # update old ckpt compatible with current code
-        pos_emb = state_dict["abstractor.pos_emb"]
-        if pos_emb.size(1) == self.pos_emb.size(1) + 1:
+        pos_emb = state_dict.get("pos_emb")
+        if pos_emb.shape == (1, 257, 1024):
             # remove obsolete first pos emb (for cls token originally)
-            state_dict["abstractor.pos_emb"] = pos_emb[:, 1:]
+            state_dict["pos_emb"] = pos_emb[:, 1:]
 
         super()._load_from_state_dict(state_dict, *args, **kwargs)
 
