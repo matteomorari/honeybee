@@ -122,7 +122,7 @@ def seed_worker(worker_id):
     Helper function to set worker seed during Dataloader initialization.
     """
     # implementation notes: https://github.com/pytorch/pytorch/issues/5059#issuecomment-817392562
-    global_rank = torch.distributed.get_rank()
+    global_rank = utils.get_rank()
     process_seed = torch.initial_seed()
     # back out the base seed so we can use all the bits
     base_seed = process_seed - worker_id

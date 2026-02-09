@@ -1,5 +1,4 @@
 import torch
-import torch.distributed as dist
 from tqdm import tqdm
 
 import utils
@@ -112,9 +111,8 @@ class Task:
         """
         each_result = self.eval_loop(bf16=bf16, progbar=progbar, **gen_kwargs)
 
-        # gather results across multiple gpus
-        gathered_results = [None for _ in range(dist.get_world_size())]
-        dist.all_gather_object(gathered_results, each_result)
+        # Single-process evaluation (no distributed gather required)
+        gathered_results = [each_result]
 
         results = {}
         scores = None

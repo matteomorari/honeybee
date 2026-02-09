@@ -3,7 +3,6 @@ import os
 from pathlib import Path
 
 import torch
-from torch.distributed import destroy_process_group, init_process_group
 from omegaconf import OmegaConf
 from hydra import initialize, compose
 
@@ -68,12 +67,6 @@ def load_exp_config_with_tasks(ckpt_path: str, task_config_names: list[str]) -> 
         logger.warning(f"Exp config does not exist: {exp_config_path}; task configs are not resolved.")
 
     return exp_cfg
-
-
-def dist_setup():
-    # Expected to use torchrun
-    init_process_group(backend="nccl")
-    torch.cuda.set_device(int(os.environ["LOCAL_RANK"]))
 
 
 def init(ckpt_path, load_results=False):
@@ -190,7 +183,5 @@ if __name__ == "__main__":
     if utils.is_main_process():
         print(args)
 
-    dist_setup()
     model, tokenizer, processor = init(args.ckpt_path, args.load_results)
     eval(model, tokenizer, processor, args)
-    destroy_process_group()

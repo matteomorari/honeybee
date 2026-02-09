@@ -1,5 +1,4 @@
 import os
-import torch.distributed as dist
 
 
 def get_dist_info() -> str:
@@ -35,7 +34,8 @@ def get_dist_info() -> str:
 
 
 def is_dist_avail_and_initialized():
-    return dist.is_available() and dist.is_initialized()
+    # No distributed support for single-GPU runs
+    return False
 
 
 def get_world_size():
@@ -55,8 +55,8 @@ def is_main_process():
 
 
 def barrier():
-    if is_dist_avail_and_initialized():
-        dist.barrier()
+    # No-op barrier for single-process execution
+    return
 
 
 def print_rank_0(message):
