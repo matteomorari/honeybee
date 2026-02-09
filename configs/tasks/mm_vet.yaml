@@ -5,7 +5,7 @@ mm_vet:
     num_workers: 8
   dataset:
     name: MMVetDataset
-    root: ./data/mm_vet
+    root: ./dataset/mm_vet
   gen_kwargs:
     max_new_tokens: 1024
     top_k: 5

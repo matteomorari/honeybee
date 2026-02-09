@@ -6,7 +6,7 @@ mmb:
   dataset:
     name: MMBDataset
     split: dev
-    root: ./data/MMBench
+    root: ./dataset/MMBench
     template_name: ${data_config.template.name}
   gen_kwargs:
     max_new_tokens: 128

@@ -5,7 +5,7 @@ seed:
     num_workers: 8
   dataset:
     name: SEEDDataset
-    root: ./data/SEED-Bench
+    root: ./dataset/SEED-Bench
     template_name: ${data_config.template.name}
     target: image
   gen_kwargs:

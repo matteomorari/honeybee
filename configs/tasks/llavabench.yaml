@@ -5,7 +5,7 @@ touchstone:
     num_workers: 8
   dataset:
     name: LlavaBenchDataset
-    root: ./data/llava-bench-in-the-wild
+    root: ./dataset/llava-bench-in-the-wild
   gen_kwargs:
     max_new_tokens: 1024
     top_k: 5

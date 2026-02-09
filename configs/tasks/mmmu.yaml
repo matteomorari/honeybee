@@ -5,7 +5,7 @@ mmmu:
     num_workers: 8
   dataset:
     name: MMMUDataset
-    root: ./data/mmmu
+    root: ./dataset/mmmu
     split: validation
     template_name: ${data_config.template.name}
   gen_kwargs:

@@ -5,7 +5,7 @@ owl:
     num_workers: 8
   dataset:
     name: OWLDataset
-    root: ./data/OwlEval
+    root: ./dataset/OwlEval
   gen_kwargs:
     max_new_tokens: 512
     top_k: 5

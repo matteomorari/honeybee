@@ -5,7 +5,7 @@ mme:
     num_workers: 8
   dataset:
     name: MMEDataset
-    root: ./data/MME
+    root: ./dataset/MME
     template_name: ${data_config.template.name}
   gen_kwargs:
     max_new_tokens: 20

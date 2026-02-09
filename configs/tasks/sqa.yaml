@@ -6,7 +6,7 @@ sqa:
   dataset:
     name: SQADataset
     split: test
-    root: ./data/ScienceQA
+    root: ./dataset/ScienceQA
     template_name: ${data_config.template.name}
   gen_kwargs:
     max_new_tokens: 128
