@@ -44,7 +44,7 @@ def calc_seed_score(results: dict):
         data_type = item["question_type"]
 
         type_counts[data_type] = type_counts.get(data_type, 0) + 1
-        correct_counts[data_type] = correct_counts.get(data_type, 0) + int(pred == gt)
+        correct_counts[data_type] = correct_counts.get(data_type, 0) + int(pred[0] == gt)
 
     total_count = 0
     total_correct = 0
