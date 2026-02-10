@@ -1,3 +1,5 @@
 __pycache__/
 .venv/
 checkpoints/
+dataset/
+eval_results/
