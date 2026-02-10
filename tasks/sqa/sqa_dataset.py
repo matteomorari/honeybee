@@ -16,11 +16,13 @@ class SQADataset(TaskDataset):
     ):
         self.root = root
         self.split = split
-        self.image_folder = os.path.join(root, "images", split)
-        annotation_path = os.path.join(root, f"llava_{split}_QCM-LEPA.json")
+        self.image_folder = os.path.join(root, split)
+        annotation_path = os.path.join(root, "problems.json")
 
         with open(annotation_path, "r") as f:
-            self.data = json.load(f)
+            annotation_file = json.load(f)
+
+        self.data = [ {"id": int(k), **v} for k, v in annotation_file.items() if v.get("split") == split ]
 
         self.processor = processor
         self.set_templatizer("eval-sqa", template_name)
@@ -33,13 +35,21 @@ class SQADataset(TaskDataset):
     def __getitem__(self, index):
         item = self.data[index]
         question_id = item["id"]
-        question = item["conversations"][0]["value"]  # question + context
-        parsed_question = parse_question(question)
+        parsed_question = {
+            "question": item["question"],
+            "options": item["choices"],
+            "context": item["hint"],
+        }
 
-        parsed_answer = parse_answer(item["conversations"][1]["value"])
+        parsed_answer = {
+            "lecture": item["lecture"],
+            "solution": item["solution"],
+            "answer_index": item["answer"],
+            "answer": chr(ord("A") + item["answer"]),
+        }
 
-        if "image" in item:
-            imgpath = os.path.join(self.image_folder, item["image"])
+        if "image" in item and item["image"] is not None:
+            imgpath = os.path.join(self.image_folder, str(question_id), item["image"])
             image = utils.load_image(imgpath)
             image_prompt = "Human: <image>"
         else:
@@ -61,7 +71,9 @@ class SQADataset(TaskDataset):
 
         data = {
             "prompt": prompt,
-            "question": question,
+            "question": item["question"],
+            "context": item["hint"],
+            "options": item["choices"],
             "question_id": question_id,
             "image_path": str(imgpath),
         }

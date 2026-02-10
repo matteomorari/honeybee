@@ -1,6 +1,7 @@
 import json
 import os
 import random
+import re
 
 _OPTIONS = ["A", "B", "C", "D", "E"]
 
@@ -50,6 +51,7 @@ class SQAMetric:
         predictions = {pred["question_id"]: pred for pred in results_dic.values()}
         split_problems = {idx: self.problems[idx] for idx in self.split_indices}
         for prob_id, prob in split_problems.items():
+            prob_id = int(prob_id)
             if prob_id not in predictions:
                 continue
             pred = predictions[prob_id]

@@ -27,7 +27,7 @@ class SQATask(Task):
         # compute metric
         metric = SQAMetric(
             split=self.data_loader.dataset.split,
-            annotation_base_dir=os.path.join(self.data_loader.dataset.root, "text"),
+            annotation_base_dir=os.path.join(self.data_loader.dataset.root),
         )
         res = metric.process_result(results)
         score = SQAScore(res)
