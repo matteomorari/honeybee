@@ -6,7 +6,7 @@ import utils
 
 class POPEDataset(TaskDataset):
     def __init__(self, root, processor, template_name):
-        root = Path(root)
+        self.root = Path(root)
 
         categories = [
             "adversarial",
@@ -16,7 +16,7 @@ class POPEDataset(TaskDataset):
 
         self.data = []
         for category in categories:
-            path = root / f"coco_pope_{category}.json"
+            path = self.root / f"coco_pope_{category}.json"
             data = utils.load(path, mode="jsonl")
             for dic in data:
                 dic["category"] = category
@@ -38,7 +38,7 @@ class POPEDataset(TaskDataset):
         # 'category': 'adversarial'}
         dic = self.data[index]
         imgpath = dic["image"]
-        imgpath = os.path.join(utils.COCO_ROOT, "val2014", imgpath)
+        imgpath = os.path.join(self.root, "val2014", imgpath)
         image = utils.load_image(imgpath)
 
         question = dic["text"]
