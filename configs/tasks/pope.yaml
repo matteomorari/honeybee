@@ -5,7 +5,7 @@ pope:
     num_workers: 8
   dataset:
     name: POPEDataset
-    root: ./dataset/POPE/old_coco
+    root: ./dataset/POPE
     template_name: ${data_config.template.name}
   gen_kwargs:
     max_new_tokens: 20
