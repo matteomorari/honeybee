@@ -60,7 +60,7 @@ class DAbstractor(DeformableDetrDecoder):
 
         # define reference points
         # manual initialization + make them as learable parameters
-        valid_ratios_q, spatial_shapes_q, _ = self._prepare_ddetr_inputs(1, num_input_tokens, 1)
+        valid_ratios_q, spatial_shapes_q, _, _= self._prepare_ddetr_inputs(1, num_input_tokens, 1)
         reference_points = self._get_query_reference_points(spatial_shapes_q, valid_ratios_q)
         self.reference_points = nn.Parameter(reference_points)
 
@@ -113,6 +113,7 @@ class DAbstractor(DeformableDetrDecoder):
         position_embeddings=None,
         reference_points=None,
         spatial_shapes=None,
+        spatial_shapes_list=None,
         level_start_index=None,
         valid_ratios=None,
         output_attentions=None,
@@ -137,6 +138,8 @@ class DAbstractor(DeformableDetrDecoder):
                 Reference point in range `[0, 1]`, top-left (0,0), bottom-right (1, 1), including padding area.
             spatial_shapes (`torch.FloatTensor` of shape `(num_feature_levels, 2)`):
                 Spatial shapes of the feature maps.
+            spatial_shapes_list (`list` of tuples, *optional*):
+                List of spatial shapes for each feature level.
             level_start_index (`torch.LongTensor` of shape `(num_feature_levels)`, *optional*):
                 Indexes for the start of each feature level. In range `[0, sequence_length]`.
             valid_ratios (`torch.FloatTensor` of shape `(batch_size, num_feature_levels, 2)`, *optional*):
@@ -205,6 +208,7 @@ class DAbstractor(DeformableDetrDecoder):
                     encoder_hidden_states=encoder_hidden_states,
                     reference_points=reference_points_input,
                     spatial_shapes=spatial_shapes,
+                    spatial_shapes_list=spatial_shapes_list,
                     level_start_index=level_start_index,
                     encoder_attention_mask=encoder_attention_mask,
                     output_attentions=output_attentions,
@@ -294,8 +298,10 @@ class DAbstractor(DeformableDetrDecoder):
             level_start_index = self._convert_dtype_device(
                 level_start_index, dtype=torch.long, device=device
             )
+        
+        spatial_shapes_list = [(h, w) for h, w in spatial_shapes.tolist()]
 
-        return valid_ratios, spatial_shapes, level_start_index
+        return valid_ratios, spatial_shapes, level_start_index, spatial_shapes_list
 
     def _make_pooled_queries(self, visual_feat):
         assert (
@@ -339,7 +345,7 @@ class DAbstractor(DeformableDetrDecoder):
         query_embed, target = self._make_pooled_queries(visual_feat)
         reference_points = self.reference_points.expand(batch_size, -1, -1)
 
-        valid_ratios, spatial_shapes, level_start_index = self._prepare_ddetr_inputs(
+        valid_ratios, spatial_shapes, level_start_index, spatial_shapes_list = self._prepare_ddetr_inputs(
             batch_size, seq_len, self.num_feature_levels, visual_feat.dtype, visual_feat.device
         )
 
@@ -351,6 +357,7 @@ class DAbstractor(DeformableDetrDecoder):
             reference_points=reference_points,
             return_dict=True,
             spatial_shapes=spatial_shapes,
+            spatial_shapes_list=spatial_shapes_list,
             level_start_index=level_start_index,
         )
 
