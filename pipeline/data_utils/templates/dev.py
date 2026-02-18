@@ -84,5 +84,6 @@ pattern_dict = {
     ],
     "eval-refexploc": [("", "Provide the bounding box coordinate of the region this sentence describes. {phrase}", "")],
     "eval-vsr": [("", "Answer the question using a single word or phrase. {question_interro} Please answer yes or no.", "")],
+    "cpod": [("", "Answer the question using a single word or phrase. {question} Please answer yes or no.", "")],
 }
 Template.register("honeybee_default", pattern_dict, pattern_map)

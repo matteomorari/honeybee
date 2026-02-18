@@ -3,39 +3,42 @@ from torch.utils.data.distributed import DistributedSampler
 
 from utils.dist import is_dist_avail_and_initialized
 
-from .mmb import MMBDataset, MMBTask
+# from .mmb import MMBDataset, MMBTask
 from .mme import MMEDataset, MMETask
-from .owl_eval import OWLDataset, OWLTask
+# from .owl_eval import OWLDataset, OWLTask
 from .pope import POPEDataset, POPETask
 from .seed import SEEDDataset, SEEDTask
 from .sqa import SQADataset, SQATask
-from .llavabench import LlavaBenchDataset, LlavaBenchTask
+# from .llavabench import LlavaBenchDataset, LlavaBenchTask
 from .mmmu import MMMUDataset, MMMUTask
-from .mm_vet import MMVetDataset, MMVetTask
+# from .mm_vet import MMVetDataset, MMVetTask
+from .cpod import CPODDataset, CPODTask
 
 TASK_LIST = [
     MMETask,
     SQATask,
-    MMBTask,
-    OWLTask,
+    # MMBTask,
+    # OWLTask,
     POPETask,
     SEEDTask,
-    LlavaBenchTask,
+    # LlavaBenchTask,
     MMMUTask,
-    MMVetTask
+    # MMVetTask,
+    CPODTask,
 ]
 TASK_DICT = {c.__name__: c for c in TASK_LIST}
 
 DATASET_LIST = [
     MMEDataset,
     SQADataset,
-    MMBDataset,
-    OWLDataset,
+    # MMBDataset,
+    # OWLDataset,
     POPEDataset,
     SEEDDataset,
-    LlavaBenchDataset,
+    # LlavaBenchDataset,
     MMMUDataset,
-    MMVetDataset,
+    # MMVetDataset,
+    CPODDataset,
 ]
 DATASET_DICT = {c.__name__: c for c in DATASET_LIST}
 
