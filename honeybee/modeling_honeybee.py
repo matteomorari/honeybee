@@ -188,6 +188,15 @@ class HoneybeeForConditionalGeneration(HoneybeePreTrainedModel, GenerationMixin)
         visual_features = self.vision_model.postprocess_for_projector(visual_features)
         return visual_features
 
+    def mod_visual_features(self, visual_features):
+        # print("visual_features shape:", visual_features.shape)
+        rows = torch.arange(0, 6).view(-1, 1)      # shape (6,1)
+        cols = torch.arange(10, 16).view(1, -1)    # shape (1,6)
+        seq_idx = rows * 16 + cols                 # broadcasting → shape (6,6)
+        seq_idx = seq_idx.flatten()                # flatten to 1D → 36 indices
+        # visual_features[:, seq_idx, :] = 0
+        return visual_features
+
     def forward_projector(self, visual_features):
         visual_embeds = self.abstractor(visual_features)["last_hidden_state"]
 
@@ -197,7 +206,8 @@ class HoneybeeForConditionalGeneration(HoneybeePreTrainedModel, GenerationMixin)
         """Forward pixel_values & project (abstract) the visual features to LLM embedding space."""
         assert pixel_values is not None
         visual_features = self.forward_vision(pixel_values)
-        visual_embeds = self.forward_projector(visual_features)
+        mod_visual_features = self.mod_visual_features(visual_features)
+        visual_embeds = self.forward_projector(mod_visual_features)
 
         # visual_embeds: [B, L, dim]
         return visual_embeds
