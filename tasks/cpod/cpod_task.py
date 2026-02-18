@@ -26,7 +26,6 @@ def calc_score(results):
     incorrect = 0
 
     for res in results.values():
-        print(res)
         total_len += 1
         if res["pred"].replace(".", "").lower() == "yes":
           correct += 1
