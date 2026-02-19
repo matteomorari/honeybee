@@ -34,6 +34,7 @@ class CPODDataset(TaskDataset):
             "question": question,
             "prompt": prompt,
             "image_path": str(image_path),
+            "position": dic["position"],
             "question_id": dic["id"],
             "question_category": dic["category"],
         }

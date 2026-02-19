@@ -1,5 +1,3 @@
-from binascii import Incomplete
-from collections import defaultdict
 import prettytable
 
 from tasks.base_task import Task, TaskScore
@@ -28,17 +26,17 @@ def calc_score(results):
     for res in results.values():
         total_len += 1
         if res["pred"].replace(".", "").lower() == "yes":
-          correct += 1
+            correct += 1
         else:
-          incorrect += 1
-  
+            incorrect += 1
+
     scores = {
-      "acc": correct / total_len * 100,
-      "total": total_len,
-      "correct": correct,
-      "incorrect": incorrect
+        "acc": correct / total_len * 100,
+        "total": total_len,
+        "correct": correct,
+        "incorrect": incorrect
     }
-  
+
     return scores
 
 class CPODTask(Task):
