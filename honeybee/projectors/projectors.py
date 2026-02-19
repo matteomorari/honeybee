@@ -1,6 +1,7 @@
 """Custom Honeybee projectors based on Conv and MLP, including C-Abstractor.
 """
 from functools import partial
+from turtle import pos
 
 import torch
 import torch.nn as nn
@@ -106,6 +107,9 @@ class Projector(nn.Module):
         # update old ckpt compatible with current code
         pos_emb = state_dict.get("pos_emb")
         if pos_emb.shape == (1, 257, 1024):
+            # remove obsolete first pos emb (for cls token originally)
+            state_dict["pos_emb"] = pos_emb[:, 1:]
+        if pos_emb.shape == (1, 577, 1024):
             # remove obsolete first pos emb (for cls token originally)
             state_dict["pos_emb"] = pos_emb[:, 1:]
 
