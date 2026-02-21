@@ -188,13 +188,42 @@ class HoneybeeForConditionalGeneration(HoneybeePreTrainedModel, GenerationMixin)
         visual_features = self.vision_model.postprocess_for_projector(visual_features)
         return visual_features
 
-    def mod_visual_features(self, visual_features):
+    def mod_visual_features(self, visual_features, myInfo=None):
         # print("visual_features shape:", visual_features.shape)
-        rows = torch.arange(0, 6).view(-1, 1)      # shape (6,1)
-        cols = torch.arange(10, 16).view(1, -1)    # shape (1,6)
-        seq_idx = rows * 16 + cols                 # broadcasting → shape (6,6)
-        seq_idx = seq_idx.flatten()                # flatten to 1D → 36 indices
-        # visual_features[:, seq_idx, :] = 0
+        square_dim = 6
+        feat_num = 16
+        if myInfo is None:
+            return visual_features
+
+        for idx, pos in enumerate(myInfo):
+            row_start = None
+            row_end = None
+            col_start = None
+            col_end = None
+            
+            if pos[0] == "B":  # bottom row
+                row_start = feat_num - square_dim
+                row_end = feat_num
+            elif pos[0] == "T":  # top row
+                row_start = 0
+                row_end = square_dim
+            else:
+                raise ValueError(f"Invalid row position: {pos[0]}")
+            
+            if pos[1] == "L":  # left column
+                col_start = 0
+                col_end = square_dim
+            elif pos[1] == "R":  # right column
+                col_start = feat_num - square_dim
+                col_end = feat_num
+            else:
+                raise ValueError(f"Invalid column position: {pos[1]}")
+
+            rows = torch.arange(row_start, row_end).view(-1, 1)    # shape (6,1)
+            cols = torch.arange(col_start, col_end).view(1, -1)    # shape (1,6)
+            seq_idx = rows * feat_num + cols                       # broadcasting → shape (6,6)
+            seq_idx = seq_idx.flatten()                            # flatten to 1D → 36 indices
+            visual_features[idx, seq_idx, :] = 0
         return visual_features
 
     def forward_projector(self, visual_features):
@@ -202,11 +231,11 @@ class HoneybeeForConditionalGeneration(HoneybeePreTrainedModel, GenerationMixin)
 
         return visual_embeds
 
-    def forward_and_project_vision(self, pixel_values):
+    def forward_and_project_vision(self, pixel_values, myInfo=None):
         """Forward pixel_values & project (abstract) the visual features to LLM embedding space."""
         assert pixel_values is not None
         visual_features = self.forward_vision(pixel_values)
-        mod_visual_features = self.mod_visual_features(visual_features)
+        mod_visual_features = self.mod_visual_features(visual_features, myInfo=myInfo)
         visual_embeds = self.forward_projector(mod_visual_features)
 
         # visual_embeds: [B, L, dim]
@@ -232,6 +261,7 @@ class HoneybeeForConditionalGeneration(HoneybeePreTrainedModel, GenerationMixin)
         input_ids: torch.FloatTensor,
         pixel_values: Optional[torch.FloatTensor] = None,
         attention_mask: Optional[torch.LongTensor] = None,
+        myInfo=None,
     ):
         """Prepare multimodal inputs from input_ids and pixel_values.
         """
@@ -246,7 +276,7 @@ class HoneybeeForConditionalGeneration(HoneybeePreTrainedModel, GenerationMixin)
 
         # Get Visual Embeddings
         if pixel_values is not None:
-            visual_embeds = self.forward_and_project_vision(pixel_values)  # [B, L, lm_dim]
+            visual_embeds = self.forward_and_project_vision(pixel_values, myInfo=myInfo)  # [B, L, lm_dim]
             img_seq_length = visual_embeds.shape[1]  # visual token length for single image
         else:
             img_seq_length = 0
@@ -337,6 +367,7 @@ class HoneybeeForConditionalGeneration(HoneybeePreTrainedModel, GenerationMixin)
         input_ids: Optional[torch.LongTensor] = None,
         attention_mask: Optional[torch.LongTensor] = None,
         seq_length: Optional[torch.LongTensor] = None,
+        myInfo=None,
         **generate_kwargs,
     ) -> torch.LongTensor:
         """
@@ -360,6 +391,7 @@ class HoneybeeForConditionalGeneration(HoneybeePreTrainedModel, GenerationMixin)
             input_ids,
             pixel_values,
             attention_mask,
+            myInfo=myInfo,
         )
         inputs_embeds = inputs["input_embeds"]
         attention_mask = inputs["attention_mask"]

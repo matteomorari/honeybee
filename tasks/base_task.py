@@ -84,9 +84,11 @@ class Task:
                     k: v.bfloat16() if v.dtype == torch.float else v for k, v in inputs.items()
                 }
             inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
+            myInfo = [data["position"] for data in batch.data]
             gens = self.model.generate(
                 **inputs,
                 **gen_kwargs,
+                myInfo=myInfo,
             )
             preds = self.tokenizer.batch_decode(gens, skip_special_tokens=True)
 
